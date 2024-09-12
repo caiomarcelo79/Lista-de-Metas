@@ -1,6 +1,22 @@
 import fastify from 'fastify'
+import { createGoal } from '../functions/create-goal'
+import z from 'zod'
 
 const app = fastify()
+
+app.post('/goals', async (request, reply) => {
+  const crateGoalSchema = z.object({
+    title: z.string(),
+    desiredWeeklyFrequency: z.number().int().min(1).max(7),
+  })
+
+  const body = crateGoalSchema.parse(request.body)
+
+  await createGoal({
+    title: body.title,
+    desiredWeeklyFrequency: body.desiredWeeklyFrequency,
+  })
+})
 
 app
   .listen({
